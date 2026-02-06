@@ -1,17 +1,23 @@
 """Complete database setup script"""
-from sqlalchemy import text
-from alembic import command
-from alembic.config import Config
-from app.models import *  # Import all models
-from app.db.base import engine, Base
-from app.core.config import settings
-from app.core.logging import setup_logging, get_logger
 import sys
 from pathlib import Path
 
-# Add parent directory to path
+# Add parent directory to path FIRST
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+try:
+    from sqlalchemy import text
+    from alembic import command
+    from alembic.config import Config
+    from app.models import *  # Import all models
+    from app.db.base import engine, Base
+    from app.core.config import settings
+    from app.core.logging import setup_logging, get_logger
+except ImportError as e:
+    print(f"❌ Error: Missing dependencies. Please install requirements first:")
+    print(f"   pip install -r requirements.txt")
+    print(f"\n📋 Details: {e}")
+    sys.exit(1)
 
 logger = get_logger(__name__)
 

@@ -23,10 +23,10 @@ dev:
 	pip install black ruff pytest-cov
 
 db-up:
-	docker-compose up -d
+	docker compose up -d
 
 db-down:
-	docker-compose down
+	docker compose down
 
 db-setup:
 	python scripts/setup_database.py

@@ -16,7 +16,7 @@ Cada tarea está diseñada para ser autocontenida y construir sobre las tareas a
   - Configurar logging centralizado
   - _Requirements: 10.1, 11.1, 11.5_
 
-- [ ]* 1.1 Escribir tests de propiedad para modelos de datos
+- [ ] 1.1 Escribir tests de propiedad para modelos de datos
   - **Property 18: Persistencia Completa de Datos**
   - **Validates: Requirements 11.1, 11.2, 11.3, 11.4, 11.5**
 
