@@ -1,13 +1,15 @@
 """Authentication service for user registration and login"""
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+
 from typing import Optional
 from uuid import UUID
 
-from app.models.user import User, Student, Teacher, UserRole
-from app.schemas.user import UserRegister
-from app.core.security import hash_password, verify_password
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from app.core.security import hash_password, verify_password
+from app.models.user import Student, Teacher, User, UserRole
+from app.schemas.user import UserRegister
 
 
 class AuthService:
@@ -29,12 +31,13 @@ class AuthService:
             HTTPException: If email already exists or registration fails
         """
         # Check if email already exists
-        existing_user = db.query(User).filter(
-            User.email == user_data.email.lower()).first()
+        existing_user = (
+            db.query(User).filter(User.email == user_data.email.lower()).first()
+        )
         if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email ya está registrado"
+                detail="Email ya está registrado",
             )
 
         # Hash the password using bcrypt
@@ -49,7 +52,7 @@ class AuthService:
                     role=UserRole.STUDENT,
                     total_problems_solved=0,
                     average_scaffold_level=0.0,
-                    bkt_parameters={}
+                    bkt_parameters={},
                 )
             elif user_data.role == UserRole.TEACHER:
                 new_user = Teacher(
@@ -57,12 +60,12 @@ class AuthService:
                     password_hash=hashed_password,
                     role=UserRole.TEACHER,
                     notion_page_ids=[],
-                    alert_preferences={}
+                    alert_preferences={},
                 )
             else:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Rol de usuario inválido"
+                    detail="Rol de usuario inválido",
                 )
 
             db.add(new_user)
@@ -71,17 +74,17 @@ class AuthService:
 
             return new_user
 
-        except IntegrityError as e:
+        except IntegrityError:
             db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Error al registrar usuario. El email puede estar ya en uso."
+                detail="Error al registrar usuario. El email puede estar ya en uso.",
             )
         except Exception as e:
             db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error interno al registrar usuario: {str(e)}"
+                detail=f"Error interno al registrar usuario: {str(e)}",
             )
 
     @staticmethod

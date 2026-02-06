@@ -1,4 +1,4 @@
-.PHONY: help install dev db-up db-down db-migrate db-upgrade db-downgrade db-init db-setup run test clean
+.PHONY: help install dev db-up db-down db-migrate db-upgrade db-downgrade db-init db-setup run test clean kill-port
 
 help:
 	@echo "Elenchos - Comandos disponibles:"
@@ -13,7 +13,9 @@ help:
 	@echo "  make db-init       - Inicializar base de datos (legacy)"
 	@echo "  make run           - Iniciar servidor de desarrollo"
 	@echo "  make test          - Ejecutar tests"
-	@echo "  make clean         - Limpiar archivos temporales"
+	@echo "  make test-cov      - Ejecutar tests con cobertura"
+	@echo "  make kill-port     - Matar proceso en puerto 8000"
+	@echo "  make clean         - Limpiar archivos temporales y puerto 8000"
 
 install:
 	pip install -r requirements.txt
@@ -52,7 +54,12 @@ test:
 test-cov:
 	pytest --cov=app --cov-report=html
 
-clean:
+kill-port:
+	@echo "Matando proceso en puerto 8000..."
+	@lsof -ti:8000 | xargs kill -9 2>/dev/null || echo "Puerto 8000 ya está libre"
+
+clean: kill-port
+	@echo "Limpiando archivos temporales..."
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
 	find . -type f -name "*.pyo" -delete
@@ -61,3 +68,4 @@ clean:
 	find . -type d -name ".hypothesis" -exec rm -rf {} +
 	rm -rf htmlcov/
 	rm -rf .coverage
+	@echo "Limpieza completada"
